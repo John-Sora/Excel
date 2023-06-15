@@ -1,0 +1,42 @@
+Function traducir(textoFuente As String, idiomaOriginal As String, idiomaObjetivo As String) As String
+
+'1- creamos una dirección URL dinámica
+Dim URL As String
+URL = "https://translate.google.com/m?sl=" & idiomaOriginal & "&tl=" & idiomaObjetivo & "&hl=en&q=" & textoFuente
+
+'2- hacer una solicitud XML HTTP a un API de un webserver
+Dim XMLHTTP As Object
+Set XMLHTTP = CreateObject("MSXML2.ServerXMLHTTP")
+XMLHTTP.Open "GET", URL, False
+XMLHTTP.setrequestheader "User-Agent", "Mozilla/5.0 (compatible;MSIE 6.0;Windows NT 10.0)"
+XMLHTTP.send ""
+
+'3-Crear un HTML usando el texto de una solicitud HTTP
+Dim objetoHTML As Object
+Set objetoHTML = CreateObject("HTMLfile")
+With objetoHTML
+    .Open
+    .write XMLHTTP.responseText
+    .Close
+End With
+
+
+'4-Leer el texto traducido desde el archivo HTML usando elementos web HTML
+'Microsoft HTML Library
+Dim HTMLDoc As HTMLDocument
+Set HTMLDoc = objetoHTML
+
+'Crear un object class de acuerdo al valor encontrado en el texto traducido  /inspect
+Dim objetoClase As Object
+Set objetoClase = HTMLDoc.getElementsByClassName("result-container")(0) 'el 0 es la posición del container que quiero leer
+If Not objetoClase Is Nothing Then
+    traducir = objetoClase.innerText
+End If
+
+'realizing the memory
+Set objetoClase = Nothing
+Set objetoHTML = Nothing
+Set XLMHTTP = Nothing
+
+
+End Function
